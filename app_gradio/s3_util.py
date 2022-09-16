@@ -18,14 +18,10 @@ def get_or_create_bucket(name):
         # error handling from https://github.com/boto/boto3/issues/1195#issuecomment-495842252
         status = err.response["ResponseMetadata"]["HTTPStatusCode"]  # status codes identify particular errors
 
-        if status == 409:  # if the bucket exists already,
-            pass  # we don't need to make it -- we presume we have the right permissions
-        else:
+        if status != 409:
             raise err
 
-    bucket = s3.Bucket(name)
-
-    return bucket
+    return s3.Bucket(name)
 
 
 def _create_bucket(name):
@@ -42,16 +38,13 @@ def _create_bucket(name):
 def make_key(fileobj, filetype=None):
     """Creates a unique key for the fileobj and optionally append the filetype."""
     identifier = make_identifier(fileobj)
-    if filetype is None:
-        return identifier
-    else:
-        return identifier + "." + filetype
+    return identifier if filetype is None else f"{identifier}.{filetype}"
 
 
 def make_unique_bucket_name(prefix, seed):
     """Creates a unique bucket name from a prefix and a seed."""
     name = hashlib.sha256(seed.encode("utf-8")).hexdigest()[:10]
-    return prefix + "-" + name
+    return f"{prefix}-{name}"
 
 
 def get_url_of(bucket, key=None):
@@ -61,8 +54,7 @@ def get_url_of(bucket, key=None):
     region = _get_region(bucket)
     key = key or ""
 
-    url = _format_url(bucket, region, key)
-    return url
+    return _format_url(bucket, region, key)
 
 
 def get_uri_of(bucket, key=None):
@@ -71,9 +63,7 @@ def get_uri_of(bucket, key=None):
         bucket = bucket.name
     key = key or ""
 
-    uri = _format_uri(bucket, key)
-
-    return uri
+    return _format_uri(bucket, key)
 
 
 def enable_bucket_versioning(bucket):
@@ -128,9 +118,7 @@ def make_identifier(byte_data):
     """Create a unique identifier for a collection of bytes via hashing."""
     # feed them to hashing algo -- security is not critical here, so we use SHA-1
     hashed_data = hashlib.sha1(byte_data)  # noqa: S3
-    identifier = hashed_data.hexdigest()  # turn it into hexdecimal
-
-    return identifier
+    return hashed_data.hexdigest()
 
 
 def _get_region(bucket):
@@ -140,18 +128,14 @@ def _get_region(bucket):
 
     s3_client = boto3.client("s3")
     bucket_location_response = s3_client.get_bucket_location(Bucket=bucket)
-    bucket_location = bucket_location_response["LocationConstraint"]
-
-    return bucket_location
+    return bucket_location_response["LocationConstraint"]
 
 
 def _format_url(bucket_name, region, key=None):
     key = key or ""
-    url = S3_URL_FORMAT.format(bucket=bucket_name, region=region, key=key)
-    return url
+    return S3_URL_FORMAT.format(bucket=bucket_name, region=region, key=key)
 
 
 def _format_uri(bucket_name, key=None):
     key = key or ""
-    uri = S3_URI_FORMAT.format(bucket=bucket_name, key=key)
-    return uri
+    return S3_URI_FORMAT.format(bucket=bucket_name, key=key)

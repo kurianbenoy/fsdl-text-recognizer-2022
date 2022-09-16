@@ -40,8 +40,7 @@ def first_appearance(x: torch.Tensor, element: Union[int, float], dim: int = 1) 
     matches = x == element
     first_appearance_mask = (matches.cumsum(dim) == 1) & matches
     does_match, match_index = first_appearance_mask.max(dim)
-    first_inds = torch.where(does_match, match_index, x.shape[dim])
-    return first_inds
+    return torch.where(does_match, match_index, x.shape[dim])
 
 
 def replace_after(x: torch.Tensor, element: Union[int, float], replace: Union[int, float]) -> torch.Tensor:
@@ -71,9 +70,9 @@ def replace_after(x: torch.Tensor, element: Union[int, float], replace: Union[in
     """
     first_appearances = first_appearance(x, element, dim=1)  # (B,)
     indices = torch.arange(0, x.shape[-1]).type_as(x)  # (S,)
-    outs = torch.where(
-        indices[None, :] <= first_appearances[:, None],  # if index is before first appearance
+    return torch.where(
+        indices[None, :]
+        <= first_appearances[:, None],  # if index is before first appearance
         x,  # return the value from x
         replace,  # otherwise, return the replacement value
     )
-    return outs  # (B, S)

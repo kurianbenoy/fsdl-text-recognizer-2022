@@ -113,8 +113,7 @@ def find_artifact(entity: str, project: str, type: str, alias: str, run=None):
 
 
 def get_logging_run(artifact):
-    api_run = artifact.logged_by()
-    return api_run
+    return artifact.logged_by()
 
 
 def print_info(artifact, run=None):

@@ -138,13 +138,7 @@ def _filter_hidden_blocks(lines, lab_number):
 def _filter_filters(lines):
     filter_comments = ["# Hide lines", "# Your code above", "# Your code below"]
     any_filters = "|".join(filter_comments)
-    filtered_lines = []
-    for line in lines:
-        if re.search(any_filters, line):
-            continue
-        else:
-            filtered_lines.append(line)
-    return filtered_lines
+    return [line for line in lines if not re.search(any_filters, line)]
 
 
 def _replace_data_dirname(lines):
@@ -164,7 +158,10 @@ def _copy_common_files(info, output_dir):
 
 
 def _copy_files_for_lab(info, lab_number, lab_output_dir):
-    selected_paths = sum([info.get(number, []) for number in range(lab_number + 1)], [])
+    selected_paths = sum(
+        (info.get(number, []) for number in range(lab_number + 1)), []
+    )
+
     new_paths = []
     for path in selected_paths:
         new_path = lab_output_dir / path

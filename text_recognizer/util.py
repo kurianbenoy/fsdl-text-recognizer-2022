@@ -51,7 +51,9 @@ def read_b64_image(b64_string, grayscale=False):
         image_file = read_b64_string(b64_string)
         return read_image_pil_file(image_file, grayscale)
     except Exception as exception:
-        raise ValueError("Could not load image from b64 {}: {}".format(b64_string, exception)) from exception
+        raise ValueError(
+            f"Could not load image from b64 {b64_string}: {exception}"
+        ) from exception
 
 
 def read_b64_string(b64_string, return_data_type=False):
@@ -86,8 +88,7 @@ def encode_b64_image(image, format="png"):
     """Encode a PIL image as a base64 string."""
     _buffer = BytesIO()  # bytes that live in memory
     image.save(_buffer, format=format)  # but which we write to like a file
-    encoded_image = base64.b64encode(_buffer.getvalue()).decode("utf8")
-    return encoded_image
+    return base64.b64encode(_buffer.getvalue()).decode("utf8")
 
 
 def compute_sha256(filename: Union[Path, str]):

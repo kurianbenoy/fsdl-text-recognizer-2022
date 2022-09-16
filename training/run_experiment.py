@@ -193,10 +193,7 @@ def main():
 
     # Hide lines below until Lab 05
     trainer.profiler = pl.profiler.PassThroughProfiler()  # turn profiling off during testing
-    # Hide lines above until Lab 05
-
-    best_model_path = checkpoint_callback.best_model_path
-    if best_model_path:
+    if best_model_path := checkpoint_callback.best_model_path:
         rank_zero_info(f"Best model saved at: {best_model_path}")
         # Hide lines below until Lab 04
         if args.wandb:

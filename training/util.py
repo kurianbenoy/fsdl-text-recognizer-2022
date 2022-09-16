@@ -10,8 +10,7 @@ def import_class(module_and_class_name: str) -> type:
     """Import class from a module, e.g. 'text_recognizer.models.MLP'."""
     module_name, class_name = module_and_class_name.rsplit(".", 1)
     module = importlib.import_module(module_name)
-    class_ = getattr(module, class_name)
-    return class_
+    return getattr(module, class_name)
 
 
 def setup_data_and_model_from_args(args: argparse.Namespace):

@@ -43,9 +43,9 @@ class ParagraphTextRecognizer:
 
         image_tensor = self.stem(image_pil).unsqueeze(axis=0)
         y_pred = self.model(image_tensor)[0]
-        pred_str = convert_y_label_to_string(y=y_pred, mapping=self.mapping, ignore_tokens=self.ignore_tokens)
-
-        return pred_str
+        return convert_y_label_to_string(
+            y=y_pred, mapping=self.mapping, ignore_tokens=self.ignore_tokens
+        )
 
 
 def convert_y_label_to_string(y: torch.Tensor, mapping: Sequence[str], ignore_tokens: Sequence[int]) -> str:

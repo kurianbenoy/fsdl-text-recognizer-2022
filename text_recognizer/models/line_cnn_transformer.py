@@ -43,8 +43,7 @@ class LineCNNTransformer(nn.Module):
         tf_layers = self.args.get("tf_layers", TF_LAYERS)
 
         # Instantiate LineCNN with "num_classes" set to self.dim
-        data_config_for_line_cnn = {**data_config}
-        data_config_for_line_cnn["mapping"] = list(range(self.dim))
+        data_config_for_line_cnn = {**data_config, "mapping": list(range(self.dim))}
         self.line_cnn = LineCNN(data_config=data_config_for_line_cnn, args=args)
         # LineCNN outputs (B, E, S) log probs, with E == dim
 

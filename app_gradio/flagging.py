@@ -106,5 +106,4 @@ class GantryImageToTextLogger(gr.FlaggingCallback):
 
 def get_api_key() -> Optional[str]:
     """Convenience method for fetching the Gantry API key."""
-    api_key = os.environ.get("GANTRY_API_KEY")
-    return api_key
+    return os.environ.get("GANTRY_API_KEY")

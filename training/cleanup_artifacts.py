@@ -121,9 +121,10 @@ def _get_runs(project_path, run_ids=None, run_name_res=None, verbose=False):
     if run_name_res is None:
         run_name_res = []
 
-    runs = []
-    for run_id in run_ids:
-        runs.append(_get_run_by_id(project_path, run_id, verbose=verbose))
+    runs = [
+        _get_run_by_id(project_path, run_id, verbose=verbose)
+        for run_id in run_ids
+    ]
 
     for run_name_re in run_name_res:
         runs += _get_runs_by_name_re(project_path, run_name_re, verbose=verbose)
@@ -178,9 +179,8 @@ def _get_entity_from(args, verbose=False):
         entity = DEFAULT_ENTITY
         if verbose:
             print(f"using default entity {entity}")
-    else:
-        if verbose:
-            print(f"using entity {entity}")
+    elif verbose:
+        print(f"using entity {entity}")
 
     return entity
 

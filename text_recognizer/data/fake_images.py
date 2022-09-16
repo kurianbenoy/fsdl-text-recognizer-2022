@@ -22,7 +22,7 @@ class FakeImageData(BaseDataModule):
 
         self.num_classes = self.args.get("num_classes", _NUM_CLASSES)
         self.output_dims = (self.num_classes, 1)
-        self.mapping = list(range(0, self.num_classes))
+        self.mapping = list(range(self.num_classes))
 
     @staticmethod
     def add_to_argparse(parser):

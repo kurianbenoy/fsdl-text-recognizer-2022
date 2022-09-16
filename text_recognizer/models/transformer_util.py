@@ -30,8 +30,7 @@ class PositionalEncodingImage(nn.Module):
         pe_w = PositionalEncoding.make_pe(d_model=d_model // 2, max_len=max_w)  # (max_w, 1, d_model // 2)
         pe_w = pe_w.permute(2, 1, 0).expand(-1, max_h, -1)  # (d_model // 2, max_h, max_w)
 
-        pe = torch.cat([pe_h, pe_w], dim=0)  # (d_model, max_h, max_w)
-        return pe
+        return torch.cat([pe_h, pe_w], dim=0)
 
     def forward(self, x: Tensor) -> Tensor:
         """pytorch.nn.module.forward"""
@@ -72,5 +71,10 @@ class PositionalEncoding(torch.nn.Module):
 def generate_square_subsequent_mask(size: int) -> torch.Tensor:
     """Generate a triangular (size, size) mask."""
     mask = (torch.triu(torch.ones(size, size)) == 1).transpose(0, 1)
-    mask = mask.float().masked_fill(mask == 0, float("-inf")).masked_fill(mask == 1, float(0.0))
+    mask = (
+        mask.float()
+        .masked_fill(mask == 0, float("-inf"))
+        .masked_fill(mask == 1, 0.0)
+    )
+
     return mask

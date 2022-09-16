@@ -92,8 +92,7 @@ def make_frontend(
 
     readme = _load_readme(with_logging=allow_flagging == "manual")
 
-    # build a basic browser interface to a Python function
-    frontend = gr.Interface(
+    return gr.Interface(
         fn=fn,  # which Python function are we interacting with?
         outputs=gr.components.Textbox(),  # what output widgets does it need? the default text widget
         # what input widgets does it need? we configure an image widget
@@ -106,13 +105,15 @@ def make_frontend(
         cache_examples=False,  # should we cache those inputs for faster inference? slows down start
         allow_flagging=allow_flagging,  # should we show users the option to "flag" outputs?
         # Hide lines below until Lab 08
-        flagging_options=["incorrect", "offensive", "other"],  # what options do users have for feedback?
+        flagging_options=[
+            "incorrect",
+            "offensive",
+            "other",
+        ],  # what options do users have for feedback?
         flagging_callback=flagging_callback,
         flagging_dir=flagging_dir
         # Hide lines above until Lab 08
     )
-
-    return frontend
 
 
 class PredictorBackend:
@@ -168,12 +169,10 @@ class PredictorBackend:
         encoded_image = util.encode_b64_image(image)
 
         headers = {"Content-type": "application/json"}
-        payload = json.dumps({"image": "data:image/png;base64," + encoded_image})
+        payload = json.dumps({"image": f"data:image/png;base64,{encoded_image}"})
 
         response = requests.post(self.url, data=payload, headers=headers)
-        pred = response.json()["pred"]
-
-        return pred
+        return response.json()["pred"]
 
     def _log_inference(self, pred, metrics):
         for key, value in metrics.items():

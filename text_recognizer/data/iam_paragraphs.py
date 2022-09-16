@@ -58,16 +58,15 @@ class IAMParagraphs(BaseDataModule):
             crops, labels = get_paragraph_crops_and_labels(iam=iam, split=split)
             save_crops_and_labels(crops=crops, labels=labels, split=split)
 
-            properties.update(
-                {
-                    id_: {
-                        "crop_shape": crops[id_].size[::-1],
-                        "label_length": len(label),
-                        "num_lines": _num_lines(label),
-                    }
-                    for id_, label in labels.items()
+            properties |= {
+                id_: {
+                    "crop_shape": crops[id_].size[::-1],
+                    "label_length": len(label),
+                    "num_lines": _num_lines(label),
                 }
-            )
+                for id_, label in labels.items()
+            }
+
 
         with open(PROCESSED_DATA_DIRNAME / "_properties.json", "w") as f:
             json.dump(properties, f, indent=4)

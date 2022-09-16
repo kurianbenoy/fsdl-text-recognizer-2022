@@ -28,7 +28,7 @@ def test_local_run():
 
     local_api = f"{local_url}api/predict"
     headers = {"Content-Type": "application/json"}
-    payload = json.dumps({"data": ["data:image/png;base64," + image_b64]})
+    payload = json.dumps({"data": [f"data:image/png;base64,{image_b64}"]})
     post_response = requests.post(local_api, data=payload, headers=headers)
     assert "error" not in post_response.json()
     assert "data" in post_response.json()

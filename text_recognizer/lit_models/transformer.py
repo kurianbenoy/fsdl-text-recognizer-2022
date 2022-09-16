@@ -53,7 +53,7 @@ class TransformerLitModel(BaseImageToTextLitModel):
         if self.is_logged_batch():
             preds = self.get_preds(logits)
             pred_strs, gt_strs = self.batchmap(preds), self.batchmap(y)
-            outputs.update({"pred_strs": pred_strs, "gt_strs": gt_strs})
+            outputs |= {"pred_strs": pred_strs, "gt_strs": gt_strs}
         # Hide lines above until Lab 04
 
         return outputs

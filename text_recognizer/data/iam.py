@@ -61,10 +61,13 @@ class IAM:
 
     def __repr__(self):
         """Print info about the dataset."""
-        info = ["IAM Dataset"]
-        info.append(f"Total Images: {len(self.xml_filenames)}")
-        info.append(f"Total Test Images: {len(self.test_ids)}")
-        info.append(f"Total Paragraphs: {len(self.paragraph_string_by_id)}")
+        info = [
+            "IAM Dataset",
+            f"Total Images: {len(self.xml_filenames)}",
+            f"Total Test Images: {len(self.test_ids)}",
+            f"Total Paragraphs: {len(self.paragraph_string_by_id)}",
+        ]
+
         num_lines = sum(len(line_regions) for line_regions in self.line_regions_by_id.items())
         info.append(f"Total Lines: {num_lines}")
 
@@ -82,10 +85,11 @@ class IAM:
     @cachedproperty
     def split_by_id(self):
         """A dictionary mapping form IDs to their split according to IAM Lines LWITLRT."""
-        split_by_id = {id_: "train" for id_ in self.train_ids}
-        split_by_id.update({id_: "val" for id_ in self.validation_ids})
-        split_by_id.update({id_: "test" for id_ in self.test_ids})
-        return split_by_id
+        return (
+            {id_: "train" for id_ in self.train_ids}
+            | {id_: "val" for id_ in self.validation_ids}
+            | {id_: "test" for id_ in self.test_ids}
+        )
 
     @cachedproperty
     def train_ids(self):
@@ -165,8 +169,9 @@ def _get_ids_from_lwitlrt_split_file(filename: str) -> List[str]:
     with open(filename, "r") as f:
         line_ids_str = f.read()
     line_ids = line_ids_str.split("\n")
-    page_ids = list({"-".join(line_id.split("-")[:2]) for line_id in line_ids if line_id})
-    return page_ids
+    return list(
+        {"-".join(line_id.split("-")[:2]) for line_id in line_ids if line_id}
+    )
 
 
 def _get_line_strings_from_xml_file(filename: str) -> List[str]:
@@ -225,14 +230,26 @@ def _get_region_from_xml_element(xml_elem: Any, xml_path: str) -> Optional[Dict[
         should be "word/cmp" if xml_elem is a line element, else "cmp"
     """
     unit_elements = xml_elem.findall(xml_path)
-    if not unit_elements:
-        return None
-    return {
-        "x1": min(int(el.attrib["x"]) for el in unit_elements) // metadata.DOWNSAMPLE_FACTOR,
-        "y1": min(int(el.attrib["y"]) for el in unit_elements) // metadata.DOWNSAMPLE_FACTOR,
-        "x2": max(int(el.attrib["x"]) + int(el.attrib["width"]) for el in unit_elements) // metadata.DOWNSAMPLE_FACTOR,
-        "y2": max(int(el.attrib["y"]) + int(el.attrib["height"]) for el in unit_elements) // metadata.DOWNSAMPLE_FACTOR,
-    }
+    return (
+        {
+            "x1": min(int(el.attrib["x"]) for el in unit_elements)
+            // metadata.DOWNSAMPLE_FACTOR,
+            "y1": min(int(el.attrib["y"]) for el in unit_elements)
+            // metadata.DOWNSAMPLE_FACTOR,
+            "x2": max(
+                int(el.attrib["x"]) + int(el.attrib["width"])
+                for el in unit_elements
+            )
+            // metadata.DOWNSAMPLE_FACTOR,
+            "y2": max(
+                int(el.attrib["y"]) + int(el.attrib["height"])
+                for el in unit_elements
+            )
+            // metadata.DOWNSAMPLE_FACTOR,
+        }
+        if unit_elements
+        else None
+    )
 
 
 if __name__ == "__main__":

@@ -40,7 +40,7 @@ class BaseLitModel(pl.LightningModule):
         if loss not in ("transformer",):
             self.loss_fn = getattr(torch.nn.functional, loss)
 
-        self.one_cycle_max_lr = self.args.get("one_cycle_max_lr", None)
+        self.one_cycle_max_lr = self.args.get("one_cycle_max_lr")
         self.one_cycle_total_steps = self.args.get("one_cycle_total_steps", ONE_CYCLE_TOTAL_STEPS)
 
         self.train_acc = Accuracy()

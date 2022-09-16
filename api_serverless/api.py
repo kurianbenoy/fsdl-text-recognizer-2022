@@ -20,10 +20,10 @@ def handler(event, _context):
     pred = model.predict(image)
     print("INFO inference complete")
     image_stat = ImageStat.Stat(image)
-    print("METRIC image_mean_intensity {}".format(image_stat.mean[0]))
-    print("METRIC image_area {}".format(image.size[0] * image.size[1]))
-    print("METRIC pred_length {}".format(len(pred)))
-    print("INFO pred {}".format(pred))
+    print(f"METRIC image_mean_intensity {image_stat.mean[0]}")
+    print(f"METRIC image_area {image.size[0] * image.size[1]}")
+    print(f"METRIC pred_length {len(pred)}")
+    print(f"INFO pred {pred}")
     return {"pred": str(pred)}
 
 
@@ -32,19 +32,15 @@ def _load_image(event):
     event = _from_string(event.get("body", event))
     image_url = event.get("image_url")
     if image_url is not None:
-        print("INFO url {}".format(image_url))
+        print(f"INFO url {image_url}")
         return util.read_image_pil(image_url, grayscale=True)
     else:
         image = event.get("image")
-        if image is not None:
-            print("INFO reading image from event")
-            return util.read_b64_image(image, grayscale=True)
-        else:
+        if image is None:
             return None
+        print("INFO reading image from event")
+        return util.read_b64_image(image, grayscale=True)
 
 
 def _from_string(event):
-    if isinstance(event, str):
-        return json.loads(event)
-    else:
-        return event
+    return json.loads(event) if isinstance(event, str) else event

@@ -28,8 +28,7 @@ class ModelSizeLogger(pl.Callback):
         self._run(trainer, module)
 
     def _run(self, trainer, module):
-        metrics = {}
-        metrics["mb_disk"] = self.get_model_disksize(module)
+        metrics = {"mb_disk": self.get_model_disksize(module)}
         metrics["nparams"] = count_params(module)
 
         if self.print_size:
@@ -77,7 +76,7 @@ class GraphLogger(pl.Callback):
         graph.format = "png"
         fname = Path(trainer.logger.experiment.dir) / "graph"
         graph.render(fname)
-        fname = str(fname.with_suffix("." + graph.format))
+        fname = str(fname.with_suffix(f".{graph.format}"))
         trainer.logger.log_image(key="graph", images=[fname])
 
 

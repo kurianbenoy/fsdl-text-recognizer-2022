@@ -95,9 +95,9 @@ class IAMSyntheticParagraphs(IAMParagraphs):
         )
         return basic + data
 
-    def add_to_argparse(parser):
-        parser.add_argument("--dataset_len", type=int, default=DATASET_LEN)
-        return parser
+    def add_to_argparse(self):
+        self.add_argument("--dataset_len", type=int, default=DATASET_LEN)
+        return self
 
 
 class IAMSyntheticParagraphsDataset(torch.utils.data.Dataset):

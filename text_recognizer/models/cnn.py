@@ -36,8 +36,7 @@ class ConvBlock(nn.Module):
             (B, C, H, W) tensor
         """
         c = self.conv(x)
-        r = self.relu(c)
-        return r
+        return self.relu(c)
 
 
 class CNN(nn.Module):

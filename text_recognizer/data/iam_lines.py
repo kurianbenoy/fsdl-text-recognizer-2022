@@ -77,8 +77,8 @@ class IAMLines(BaseDataModule):
             self.data_val = BaseDataset(x_val, y_val, transform=self.trainval_transform)
 
             # quick check: do we have the right sequence lengths?
-            assert self.output_dims[0] >= max([len(_) for _ in labels_train]) + 2  # Add 2 for start/end tokens.
-            assert self.output_dims[0] >= max([len(_) for _ in labels_val]) + 2  # Add 2 for start/end tokens.
+            assert self.output_dims[0] >= max(len(_) for _ in labels_train) + 2
+            assert self.output_dims[0] >= max(len(_) for _ in labels_val) + 2
 
         if stage == "test" or stage is None:
             x_test, labels_test = load_processed_crops_and_labels("test", PROCESSED_DATA_DIRNAME)
@@ -86,7 +86,7 @@ class IAMLines(BaseDataModule):
             y_test = convert_strings_to_labels(labels_test, self.inverse_mapping, length=self.output_dims[0])
             self.data_test = BaseDataset(x_test, y_test, transform=self.transform)
 
-            assert self.output_dims[0] >= max([len(_) for _ in labels_test]) + 2
+            assert self.output_dims[0] >= max(len(_) for _ in labels_test) + 2
 
     def __repr__(self) -> str:
         """Print info about the dataset."""
@@ -148,8 +148,10 @@ def load_processed_crops_and_labels(split: str, data_dirname: Path):
 def load_processed_line_crops(split: str, data_dirname: Path):
     """Load line crops for given split from processed directory."""
     crop_filenames = sorted((data_dirname / split).glob("*.png"), key=lambda filename: int(Path(filename).stem))
-    crops = [util.read_image_pil(filename, grayscale=True) for filename in crop_filenames]
-    return crops
+    return [
+        util.read_image_pil(filename, grayscale=True)
+        for filename in crop_filenames
+    ]
 
 
 def load_processed_line_labels(split: str, data_dirname: Path):
